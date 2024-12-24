@@ -1,11 +1,11 @@
-'use client'
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2 } from 'lucide-react';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   const [todos, setTodos] = useState([]);
@@ -13,37 +13,45 @@ export default function App() {
 
   const addTodo = (e) => {
     e.preventDefault();
-    
+
     if (newTodo.trim()) {
       setTodos([
         ...todos,
         {
           id: Date.now(),
           text: newTodo.trim(),
-          completed: false
-        }
+          completed: false,
+        },
       ]);
+      toast.success("Tâche ajoutée avec succès !");
       setNewTodo("");
+    } else {
+      toast.error("Veuillez saisir une tâche !");
     }
   };
 
   const toggleTodo = (id) => {
     setTodos((prevTodos) =>
-      prevTodos.map(todo =>
+      prevTodos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
+    toast.info("État de la tâche mis à jour !");
   };
 
   const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    setTodos(todos.filter((todo) => todo.id !== id));
+    toast.warning("Tâche supprimée !");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 dark:bg-gray-900">
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <Card className="mx-auto max-w-md">
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold">Ma Liste de Tâches</CardTitle>
+          <CardTitle className="text-center text-2xl font-bold">
+            Ma Liste de Tâches
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={addTodo} className="mb-6 flex gap-2">
@@ -63,7 +71,7 @@ export default function App() {
                 Aucune tâche pour le moment
               </p>
             ) : (
-              todos.map(todo => (
+              todos.map((todo) => (
                 <div
                   key={todo.id}
                   className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent"
@@ -71,12 +79,16 @@ export default function App() {
                   <div className="flex items-center gap-3">
                     <Checkbox
                       checked={todo.completed}
-                      onCheckedChange={() => toggleTodo(todo.id)} 
+                      onCheckedChange={() => toggleTodo(todo.id)}
                       id={`todo-${todo.id}`}
                     />
                     <label
                       htmlFor={`todo-${todo.id}`}
-                      className={`${todo.completed ? "text-muted-foreground line-through" : ""}`}
+                      className={`${
+                        todo.completed
+                          ? "text-muted-foreground line-through"
+                          : ""
+                      }`}
                     >
                       {todo.text}
                     </label>
@@ -96,7 +108,8 @@ export default function App() {
 
           {todos.length > 0 && (
             <p className="mt-4 text-center text-sm text-muted-foreground">
-              {todos.filter(t => t.completed).length} tâche(s) terminée(s) sur {todos.length}
+              {todos.filter((t) => t.completed).length} tâche(s) terminée(s) sur{" "}
+              {todos.length}
             </p>
           )}
         </CardContent>
@@ -104,4 +117,3 @@ export default function App() {
     </div>
   );
 }
-
